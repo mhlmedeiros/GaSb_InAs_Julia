@@ -47,7 +47,7 @@ y_min, y_max = 400, 450;
 #             EnCB_97, EnVB_97,
 #             GammaCB_97, GammaVB_97,
 #             eta2_97, eta3_97,
-#             P_97, -2*DeltaRashba_97)
+#             P_97, -2*Delta_97)
 # edit_fig( nome=L"$97$ \AA", label_x=L"$k_x~[2\pi/a_0]$",
 #             label_y=L"$\varepsilon$ $[meV]$")
 
@@ -56,8 +56,8 @@ spectrum_inf_DS(vec_k_limited, vec_k_limited[2]-vec_k_limited[1],
             EnCB_103, EnVB_103,
             GammaCB_103, GammaVB_103,
             eta2_103, eta3_103,
-            P_103, -1.0*DeltaRashba_103)
-edit_fig( nome= string(L"$\Delta = $",DeltaRashba_103," meV"), label_x=L"$k_x~[2\pi/a_0]$",
+            P_103, -1.0*Delta_103)
+edit_fig( nome= string(L"$\Delta = $",Delta_103," meV"), label_x=L"$k_x~[2\pi/a_0]$",
             label_y=L"$\varepsilon$ $[meV]$")
 
 # figure(2)
@@ -65,8 +65,8 @@ edit_fig( nome= string(L"$\Delta = $",DeltaRashba_103," meV"), label_x=L"$k_x~[2
 #             EnCB_103, EnVB_103,
 #             GammaCB_103, GammaVB_103,
 #             eta2_103, eta3_103,
-#             P_103, -2.0*DeltaRashba_103)
-# edit_fig( nome= string(L"$\Delta = $",-2*DeltaRashba_103," meV"), label_x=L"$k_x~[2\pi/a_0]$",
+#             P_103, -2.0*Delta_103)
+# edit_fig( nome= string(L"$\Delta = $",-2*Delta_103," meV"), label_x=L"$k_x~[2\pi/a_0]$",
 #             label_y=L"$\varepsilon$ $[meV]$")
 # #
 # figure(3)
@@ -74,8 +74,8 @@ edit_fig( nome= string(L"$\Delta = $",DeltaRashba_103," meV"), label_x=L"$k_x~[2
 #             EnCB_103, EnVB_103,
 #             GammaCB_103, GammaVB_103,
 #             eta2_103, eta3_103,
-#             P_103, -4.0*DeltaRashba_103)
-# edit_fig( nome= string(L"$\Delta = $",-4*DeltaRashba_103," meV"), label_x=L"$k_x~[2\pi/a_0]$",
+#             P_103, -4.0*Delta_103)
+# edit_fig( nome= string(L"$\Delta = $",-4*Delta_103," meV"), label_x=L"$k_x~[2\pi/a_0]$",
 #             label_y=L"$\varepsilon$ $[meV]$")
 # #
 # figure(4)
@@ -83,8 +83,8 @@ edit_fig( nome= string(L"$\Delta = $",DeltaRashba_103," meV"), label_x=L"$k_x~[2
 #             EnCB_103, EnVB_103,
 #             GammaCB_103, GammaVB_103,
 #             eta2_103, eta3_103,
-#             P_103, -8.0*DeltaRashba_103)
-# edit_fig( nome= string(L"$\Delta = $",-8*DeltaRashba_103," meV"), label_x=L"$k_x~[2\pi/a_0]$",
+#             P_103, -8.0*Delta_103)
+# edit_fig( nome= string(L"$\Delta = $",-8*Delta_103," meV"), label_x=L"$k_x~[2\pi/a_0]$",
 #             label_y=L"$\varepsilon$ $[meV]$")
 
 # figure(3)
@@ -92,6 +92,6 @@ edit_fig( nome= string(L"$\Delta = $",DeltaRashba_103," meV"), label_x=L"$k_x~[2
 #             EnCB_110, EnVB_110,
 #             GammaCB_110, GammaVB_110,
 #             eta2_110, eta3_110,
-#             P_110, -2*DeltaRashba_110)
+#             P_110, -2*Delta_110)
 # edit_fig( nome=L"$110$ \AA", label_x=L"$k_x~[2\pi/a_0]$",
 #             label_y=L"$\varepsilon$ $[meV]$")

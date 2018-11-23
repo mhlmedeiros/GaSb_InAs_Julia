@@ -63,7 +63,7 @@ E_097 = spectrum_DS(vec_k_limited,
                 EnCB_97, EnVB_97,
                 GammaCB_97, GammaVB_97,
                 eta2_97, eta3_97,
-                P_97, 10*DeltaRashba_97,
+                P_97, 10*Delta_97,
                 spinor_dim = chosen_dim);
 
 nome_dados_97 = "E_097_Dim_3";
@@ -84,7 +84,7 @@ E_103 = spectrum_DS(vec_k_limited,
                 EnCB_103, EnVB_103,
                 GammaCB_103, GammaVB_103,
                 eta2_103, eta3_103,
-                P_97, 10*DeltaRashba_97,
+                P_97, 10*Delta_97,
                 spinor_dim = chosen_dim);
 
 nome_dados_103 = "E_103_Dim_3";
@@ -104,7 +104,7 @@ E_110 = spectrum_DS(vec_k_limited,
                 EnCB_110, EnVB_110,
                 GammaCB_110, GammaVB_110,
                 eta2_110, eta3_110,
-                P_110, 10*DeltaRashba_110,
+                P_110, 10*Delta_110,
                 spinor_dim = chosen_dim);
 
 nome_dados_110 = "E_110_Dim_3";

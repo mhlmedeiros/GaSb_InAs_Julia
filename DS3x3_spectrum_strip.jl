@@ -20,7 +20,7 @@ Nkx = 500 ; # número de pontos do espaço recíproco
 vec_k_limited = linspace(-1, 1, Nkx) * pi/aSystem * porcent;
 
 # Change directory to that where the code is
-cd("/home/marcos/Dropbox/projetos/sipahi_dias/")
+# cd("/home/marcos/Dropbox/projetos/sipahi_dias/")
 
 
 
@@ -48,7 +48,7 @@ group_attr = Dict("Ly" => round(Ly,1),
                 "aSystem" => aSystem );
 
 # path_dados = "/home/marcos/Documents/julia_resultados/resultados_Guilherme/";
-path_dados = "/home/marcos/Documents/julia_resultados/resultados_Guilherme/novos_parametros/";
+# path_dados = "/home/marcos/Documents/julia_resultados/resultados_Guilherme/novos_parametros/";
 
 
 
@@ -131,14 +131,14 @@ nome_dados_110 = "E_110_Dim_3";
 # read_and_plot_three_results_path(path_dados, nome_do_arquivo, nome_grupo, lista_de_nomes)
 
 
-cd()
-cd("Dropbox/projetos/sipahi_dias/")
+# cd()
+# cd("Dropbox/projetos/sipahi_dias/")
 
 
 
 
-y_min,y_max = 415,440;
-x_min,x_max = -0.01,0.01;
+y_min,y_max = 410,470;
+x_min,x_max = -0.02,0.02;
 
 figure(1)
 print_bandas(Ry * 1000 * E_097 , vec_k_limited./(2*pi/aSystem))

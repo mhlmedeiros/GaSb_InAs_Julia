@@ -56,7 +56,7 @@ spectrum_inf_DS(vec_k_limited, vec_k_limited[2]-vec_k_limited[1],
             EnCB_103, EnVB_103,
             GammaCB_103, GammaVB_103,
             eta2_103, eta3_103,
-            P_103, -1.0*Delta_103)
+            P_103, +1.0*Delta_103)
 edit_fig( nome= string(L"$\Delta = $",Delta_103," meV"), label_x=L"$k_x~[2\pi/a_0]$",
             label_y=L"$\varepsilon$ $[meV]$")
 

@@ -51,10 +51,10 @@ EnCB_103 = 0.0313913;
 EnVB_103 = 0.0314028;
 GammaCB_103 = 39.9073;
 GammaVB_103 = -21.6738;
-P_103 = 0*0.0972126;
-Delta_103 = -0*0.000201637;
-eta2_103 = -0*0.295556;
-eta3_103 = -0*1.17352;
+P_103 = 0.0972126;
+Delta_103 = -0.000201637;
+eta2_103 = -0.295556;
+eta3_103 = -1.17352;
 
 #*******************************************************************************
 #                         Sistema com 110.0 Å (Angstrom):
@@ -89,15 +89,15 @@ eta3_110 = 1.18696;
 
 
 function Hamil3x3(kx, ky, enCBR, enVBR, γCR, γVR, η2R, η3R, PXR, Δ)
-    H_11 = enCBR + (kx^2 + ky^2)γCR;
-    H_12 = (kx^2 - ky^2)η2R + 1im*kx*ky*η3R;
-    H_13 = - 1im*(kx + 1im*ky)PXR;
+    H_11 = enCBR + (kx^2 + ky^2) * γCR;
+    H_12 = (kx^2 - ky^2) * η2R + 1im * kx * ky * η3R;
+    H_13 = - 1im * (kx + 1im * ky) * PXR;
 
-    H_21 = conj(H_12);
-    H_22 = enVBR + (kx^2 + ky^2)γVR;
+    H_21 = (kx^2 - ky^2) * η2R - 1im * kx * ky * η3R;
+    H_22 = enVBR + (kx^2 + ky^2) * γVR;
     H_23 = -1im * Δ ;
 
-    H_31 = + 1im*(kx - 1im*ky)PXR;;
+    H_31 = + 1im * (kx - 1im * ky) * PXR;;
     H_32 = 1im * Δ ;
     H_33 = H_22;
     return [H_11 H_12 H_13; H_21 H_22 H_23; H_31 H_32 H_33]

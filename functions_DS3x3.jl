@@ -122,8 +122,8 @@ function Hamil3Nyx3Ny(kx, enCBR, enVBR, γCR, γVR, η2R, η3R, PXR, Δ ; dim = 
 
 
     H_31 = transpose(conj(H_13));
-    H_33 = H_22;
     H_32 = 1im*Δ*eye(Ny);
+    H_33 = H_22;
 
     if dim == 2
         return [H_11 H_13; H_31 H_33]
@@ -196,7 +196,7 @@ function spectrum_DS(k_vec, enCBR, enVBR, γCR, γVR, η2R, η3R, PXR, Δ; spino
     #********************************************************************#
     #           Essa função gera uma matriz em que                       #
     #   ▸ cada coluna corrresponde a um valor de kₓ;                     #
-    #   ▸ cada linha corrresponde uma banda de índice "n";               #
+    #   ▸ cada linha corresponde uma banda de índice "n";                #
     #                                                                    #
     #                                                                    #
     #                                                                    #

@@ -1,5 +1,5 @@
 using LinearAlgebra
-using Plots
+using PyPlot
 
 
 #*******************************************************************************
@@ -143,14 +143,12 @@ function print_bandas(kx_span, M_vals)
     # print(size(M_vals))
     kx_span = convertMomentum(kx_span)
     M_vals  = convertEnergy(M_vals)
-    ymin, ymax = [400 500]
-    xmin, xmax = [kx_span[1] kx_span[end]]
-    p = plot( kx_span , M_vals',
-            xlims = (xmin, xmax),
-            ylims = (ymin, ymax),
-            color = "black",
-            legend=false)
-    return p
+
+    fig, ax = subplots(1, 1, figsize = (8,8))
+    ax.plot(kx_span , M_vals', color = "black")
+    ax.set_xlim(kx_span[1], kx_span[end])
+    ax.set_ylim(400, 500)
+    return fig
 end
 
 
@@ -178,9 +176,9 @@ E_097 = spectrum_DS(vec_k_limited, params97, spinor_dim = chosen_dim);
 #
 # figure(1)
 # plot(vec_k_limited./(a₀*10^(-1)), Ry * 1000 * E_097')
-fig = print_bandas(vec_k_limited,  E_097)
-# display(display(fig))
-savefig(fig,"bands_97_old_params.png")
+print_bandas(vec_k_limited,  E_097)
+savefig("bands_97_old_params.png")
+show()
 # ylim(y_min,y_max)
 # xlim(x_min,x_max
 # length(vec_k_limited)

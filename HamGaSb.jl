@@ -1,12 +1,13 @@
 
+module HamGaSb
+
 using PyPlot
 using LinearAlgebra
 
+const Ry = 13.6; # constante de Rydberg;
+const a₀ = 0.529167; # raio de Bohr
+const aSystem = 6.21/a₀; # parâmetro de rede em unidades de raio de Bohr
 
-#*******************************************************************************
-#                         Sistema com 97.0 Å (Angstrom):
-#                       Retirado de Ham3x3-097-103-110.nb
-#*******************************************************************************
 function γC(gamma :: Float64)
     ## for 97 Å
     gamma
@@ -26,9 +27,9 @@ function γV(x::Float64, A::Float64, B::Float64, C::Float64)
     A + B*x + C*x^2
 end
 
-function Δγ(x::Float64, A::Float64, B::Float64)
+function Δγ(x::Float64, A::Float64, B::Float64, C::Float64)
     ## 97 Å
-    A + B*x^2
+    A + B*exp(C*x)^2
 end
 
 function Δγ(x::Float64, A::Float64, B::Float64, C::Float64,
@@ -118,16 +119,23 @@ function preparargs(γCargs, γVargs, Pxargs, ΔRargs, Δγargs, αCargs, αVarg
     pushfirst!(αVargs, εF)
 end
 
+
 function hamil3x3_up(kx, ky, εF; EC, EV, γCargs, γVargs, Pxargs,
                     Δγargs, ΔRargs, αCargs, αVargs)
 
-    preparargs(γCargs, γVargs, Pxargs, ΔRargs, Δγargs, αCargs, αVargs, εF)
-
-    println("gammaC: ", γCargs)
-    println("gammaV: ", γVargs)
-    println("DeltaR: ", ΔRargs)
-    println("alphaC: ", αCargs)
-    println("alphaV: ", αVargs)
+    if length(ΔRargs) == 1
+        println("gammaC: ", γCargs)
+        println("gammaV: ", γVargs)
+        println("DeltaR: ", ΔRargs)
+        println("alphaC: ", αCargs)
+        println("alphaV: ", αVargs)
+        preparargs(γCargs, γVargs, Pxargs, ΔRargs, Δγargs, αCargs, αVargs, εF)
+        println("gammaC: ", γCargs)
+        println("gammaV: ", γVargs)
+        println("DeltaR: ", ΔRargs)
+        println("alphaC: ", αCargs)
+        println("alphaV: ", αVargs)
+    end
 
 
     H_11 = EC + αC(αCargs...)*(kx + ky) + γC(γCargs...)*(kx^2 + ky^2)
@@ -150,8 +158,44 @@ function hamil3x3_up(kx, ky, εF; EC, EV, γCargs, γVargs, Pxargs,
 end
 
 
-H = hamil3x3_up(0, 0, 0; params_103...)
-println("H :", H)
+function spectrum_inf_DS(k_vec_x, ky, εF, params)
+
+
+
+    H_inf = [hamil3x3_up(kx, ky, εF; params...) for kx in k_vec_x];
+    H_spectrum = [Ry * 1000 * eigvals( H_inf[i] ) for i = 1 : length(k_vec_x) ];
+
+    H_1 = map(n -> n[1], H_spectrum);
+    H_2 = map(n -> n[2], H_spectrum);
+    H_3 = map(n -> n[3], H_spectrum);
+
+    # plot(k_vec_x./(2*pi/aSystem), H_1,linestyle="",marker=".",markersize=0.5, color="red")
+    # plot(k_vec_x./(2*pi/aSystem), H_2,linestyle="",marker=".",markersize=0.5, color="blue")
+    # plot(k_vec_x./(2*pi/aSystem), H_3,linestyle="",marker=".",markersize=0.5, color="green")
+
+    plot(k_vec_x./(2*pi/aSystem), H_1,linestyle="-",markersize=0.5, color="red")
+    plot(k_vec_x./(2*pi/aSystem), H_2,linestyle="-",markersize=0.5, color="blue")
+    plot(k_vec_x./(2*pi/aSystem), H_3,linestyle="-",markersize=0.5, color="green")
+
+    return 0
+end
+
+
+function print_parameters()
+    println(params_97)
+
+    println(params_103)
+
+    println(params_110)
+end
+
+end
+
+
+
+# H = hamil3x3_up(0, 0, 0; params_103...)
+# println("H :", H)
+
 
 # function Hamil3Nyx3Ny(kx, enCBR, enVBR, γCR, γVR, η2R, η3R, PXR, Δ ; dim = 3)
 #     k_y_first = (-1im/(2*dy)) * full(Tridiagonal(-ones(Ny-1), zeros(Ny), ones(Ny-1)));
@@ -291,25 +335,6 @@ println("H :", H)
 #
 #
 #
-function spectrum_inf_DS(k_vec_x, ky, εF, params)
-
-    H_inf = [hamil3x3_up(kx, ky, εF; params...) for kx in k_vec_x];
-    H_spectrum = [Ry * 1000 * eigvals( H_inf[i] ) for i = 1 : length(k_vec_x) ];
-
-    H_1 = map(n -> n[1], H_spectrum);
-    H_2 = map(n -> n[2], H_spectrum);
-    H_3 = map(n -> n[3], H_spectrum);
-
-    # plot(k_vec_x./(2*pi/aSystem), H_1,linestyle="",marker=".",markersize=0.5, color="red")
-    # plot(k_vec_x./(2*pi/aSystem), H_2,linestyle="",marker=".",markersize=0.5, color="blue")
-    # plot(k_vec_x./(2*pi/aSystem), H_3,linestyle="",marker=".",markersize=0.5, color="green")
-
-    plot(k_vec_x./(2*pi/aSystem), H_1,linestyle="-",markersize=0.5, color="red")
-    plot(k_vec_x./(2*pi/aSystem), H_2,linestyle="-",markersize=0.5, color="blue")
-    plot(k_vec_x./(2*pi/aSystem), H_3,linestyle="-",markersize=0.5, color="green")
-
-    return 0
-end
 #
 #
 #

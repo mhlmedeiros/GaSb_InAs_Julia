@@ -1,200 +1,201 @@
 
 module HamGaSb
 
-using PyPlot
-using LinearAlgebra
+    using PyPlot
+    using LinearAlgebra
 
 
-## Constants :
-const Ry = 13.6; # constante de Rydberg;
-const a₀ = 0.529167; # raio de Bohr
-const aSystem = 6.21/a₀; # parâmetro de rede em unidades de raio de Bohr
+    ## Constants :
+    const Ry = 13.6; # constante de Rydberg;
+    const a₀ = 0.529167; # raio de Bohr
+    const aSystem = 6.21/a₀; # parâmetro de rede em unidades de raio de Bohr
 
-## Modules that are visible to "main"
-export spectrumBulk
-export hamilBulk
-export params_97
-export params_103
-export params_110
+    ## Modules that are visible to "main"
+    export spectrumBulk
+    export hamilBulk
+    export
+    export params_97, param
+    export params_103
+    export params_110
 
-function γC(gamma :: Float64)
-    ## for 97 Å
-    gamma
-end
-
-function γC(x::Float64, A::Float64, B::Float64)
-    ## for 103 Å and 110 Å
-    A + B*x^2
-end
-
-function γV(gamma::Float64)
-    gamma ## for 97 Å
-end
-
-function γV(x::Float64, A::Float64, B::Float64, C::Float64)
-    ## for 103 Å and 110 Å
-    A + B*x + C*x^2
-end
-
-function Δγ(x::Float64, A::Float64, B::Float64, C::Float64)
-    ## 97 Å
-    A + B*exp(C*x)^2
-end
-
-function Δγ(x::Float64, A::Float64, B::Float64, C::Float64,
-    D::Float64, F::Float64, G::Float64)
-    ## 103 Å and 110 Å
-    x < 6 ? A + B * exp(C*x) : D + F*x + G*x^2
-end
-
-function αC(x::Float64, A::Float64, B::Float64)
-    # for 97 Å
-    A + B * x
-end
-
-function αC(x::Float64, A::Float64, B::Float64, C::Float64)
-    ## 103 and 110 Å
-    A + B*x + C*x^2
-end
-
-function αV(x::Float64, A::Float64, B::Float64, C::Float64)
-    ## for all systems
-    A + B*exp(C*x)
-end
-
-function ΔR(x::Float64, A::Float64)
-    ## for all systems
-    A*x
-end
-
-function Px(P::Float64)
-    P ## for 97 and 110 Å
-end
-
-function Px(x::Float64, A::Float64, B::Float64, C::Float64)
-    A + B*x + C*x^2 ## for 103 Å
-end
-
-
-params_97 = Dict(
-    :EC => 0.0320879,
-    :EV => 0.0314029,
-    :γCargs => [36.917],
-    :γVargs => [-22.4782],
-    :Pxargs => [-0.108812],
-    :Δγargs => [-0.231075, 4.11407, -0.255277],
-    :ΔRargs => [2.79538e-5],
-    :αCargs => [3.24001e-5, 8.28089e-5],
-    :αVargs => [0.0219519, -0.02344, -0.286293])
-
-params_103 = Dict(
-    :EC => 0.0313913,
-    :EV => 0.0314028,
-    :γCargs => [42.6859, -0.00694795],
-    :γVargs => [-19.1031, -0.0203693, 0.00417352],
-    :Pxargs => [0.0971718, 1.7474e-7, -5.92765e-7],
-    :Δγargs => [1.31607,-3.7044,-0.140137,-0.158825,0.0213621,-0.0031922],
-    :ΔRargs => [-2.72091e-5],
-    :αCargs => [-5.41767e-5, 2.48155e-4, -3.66946e-7],
-    :αVargs => [0.0164299,-0.0166324,-0.43601])
-
-params_110 = Dict(
-    :EC => 0.030775,
-    :EV => 0.0314028,
-    :γCargs => [39.3037, -8.92854e-3,],
-    :γVargs => [-16.9182, 0.0434725, 2.84609e-3],
-    :Pxargs => [0.125543],
-    :Δγargs => [-0.0609416, -0.560249, -0.536596, 0.494559, -0.156445, -2.21618e-3],
-    :ΔRargs => [-2.77126e-5],
-    :αCargs => [6.47954e-5, 4.07089e-4, -4.18461e-6],
-    :αVargs => [0.0206344, -0.0210344, -0.270751])
-
-
-
-function preparargs(γCargs, γVargs, Pxargs, ΔRargs, Δγargs, αCargs, αVargs, εF)
-
-    if length(γCargs) != 1
-        pushfirst!(γCargs, εF)
-        pushfirst!(γVargs, εF)
+    function γC(gamma :: Float64)
+        ## for 97 Å
+        gamma
     end
 
-    if length(Pxargs) != 1
-        pushfirst!(Pxargs, εF)
+    function γC(x::Float64, A::Float64, B::Float64)
+        ## for 103 Å and 110 Å
+        A + B*x^2
     end
 
-    pushfirst!(ΔRargs, εF)
-    pushfirst!(Δγargs, εF)
-    pushfirst!(αCargs, εF)
-    pushfirst!(αVargs, εF)
-end
+    function γV(gamma::Float64)
+        gamma ## for 97 Å
+    end
 
+    function γV(x::Float64, A::Float64, B::Float64, C::Float64)
+        ## for 103 Å and 110 Å
+        A + B*x + C*x^2
+    end
 
-function showparams(EC, EV, γCargs, γVargs,
-                    Pxargs, Δγargs, ΔRargs, αCargs, αVargs)
-    println("gammaC: ", γCargs)
-    println("gammaV: ", γVargs)
-    println("DeltaR: ", ΔRargs)
-    println("alphaC: ", αCargs)
-    println("alphaV: ", αVargs)
-end
+    function Δγ(x::Float64, A::Float64, B::Float64, C::Float64)
+        ## 97 Å
+        A + B*exp(C*x)^2
+    end
 
-function hamilBulk(kx, ky, εF; EC, EV, γCargs, γVargs, Pxargs,
-                    Δγargs, ΔRargs, αCargs, αVargs)
+    function Δγ(x::Float64, A::Float64, B::Float64, C::Float64,
+        D::Float64, F::Float64, G::Float64)
+        ## 103 Å and 110 Å
+        x < 6 ? A + B * exp(C*x) : D + F*x + G*x^2
+    end
 
-    if length(ΔRargs) == 1
-        # show_params(EC, EV, γCargs, γVargs, Pxargs, Δγargs, ΔRargs, αCargs, αVargs)
-        preparargs(γCargs, γVargs, Pxargs, ΔRargs, Δγargs, αCargs, αVargs, εF)
-        # show_params(EC, EV, γCargs, γVargs, Pxargs, Δγargs, ΔRargs, αCargs, αVargs)
+    function αC(x::Float64, A::Float64, B::Float64)
+        # for 97 Å
+        A + B * x
+    end
+
+    function αC(x::Float64, A::Float64, B::Float64, C::Float64)
+        ## 103 and 110 Å
+        A + B*x + C*x^2
+    end
+
+    function αV(x::Float64, A::Float64, B::Float64, C::Float64)
+        ## for all systems
+        A + B*exp(C*x)
+    end
+
+    function ΔR(x::Float64, A::Float64)
+        ## for all systems
+        A*x
+    end
+
+    function Px(P::Float64)
+        P ## for 97 and 110 Å
+    end
+
+    function Px(x::Float64, A::Float64, B::Float64, C::Float64)
+        A + B*x + C*x^2 ## for 103 Å
     end
 
 
-    H_11 = EC + αC(αCargs...)*(kx + ky) + γC(γCargs...)*(kx^2 + ky^2)
-    H_12 =  1im * (kx - 1im * ky) * Px(Pxargs...)
-    H_21 = -1im * (kx + 1im * ky) * Px(Pxargs...)
+    params_97 = Dict(
+        :EC => 0.0320879,
+        :EV => 0.0314029,
+        :γCargs => [36.917],
+        :γVargs => [-22.4782],
+        :Pxargs => [-0.108812],
+        :Δγargs => [-0.231075, 4.11407, -0.255277],
+        :ΔRargs => [2.79538e-5],
+        :αCargs => [3.24001e-5, 8.28089e-5],
+        :αVargs => [0.0219519, -0.02344, -0.286293])
 
-    if length(γVargs) == 1
-        H_22 = EV + ΔR(ΔRargs...) + (γV(γVargs...) + Δγ(Δγargs...)) * (kx^2 + ky^2) + αV(αVargs...) * (kx + ky)
-        H_23 = 0
-        H_32 = 0
-        H_33 = EV - ΔR(ΔRargs...) + (γV(γVargs...) - Δγ(Δγargs...)) * (kx^2 + ky^2) + αV(αVargs...) * (kx + ky)
-    else
-        H_22 = EV + (γV(γVargs...) + Δγ(Δγargs...)) * (kx^2 + ky^2) + αV(αVargs...) * (kx + ky)
-        H_23 =  1im*ΔR(ΔRargs...)
-        H_32 = -1im*ΔR(ΔRargs...)
-        H_33 = EV + (γV(γVargs...) - Δγ(Δγargs...)) * (kx^2 + ky^2) + αV(αVargs...) * (kx + ky)
+    params_103 = Dict(
+        :EC => 0.0313913,
+        :EV => 0.0314028,
+        :γCargs => [42.6859, -0.00694795],
+        :γVargs => [-19.1031, -0.0203693, 0.00417352],
+        :Pxargs => [0.0971718, 1.7474e-7, -5.92765e-7],
+        :Δγargs => [1.31607,-3.7044,-0.140137,-0.158825,0.0213621,-0.0031922],
+        :ΔRargs => [-2.72091e-5],
+        :αCargs => [-5.41767e-5, 2.48155e-4, -3.66946e-7],
+        :αVargs => [0.0164299,-0.0166324,-0.43601])
+
+    params_110 = Dict(
+        :EC => 0.030775,
+        :EV => 0.0314028,
+        :γCargs => [39.3037, -8.92854e-3,],
+        :γVargs => [-16.9182, 0.0434725, 2.84609e-3],
+        :Pxargs => [0.125543],
+        :Δγargs => [-0.0609416, -0.560249, -0.536596, 0.494559, -0.156445, -2.21618e-3],
+        :ΔRargs => [-2.77126e-5],
+        :αCargs => [6.47954e-5, 4.07089e-4, -4.18461e-6],
+        :αVargs => [0.0206344, -0.0210344, -0.270751])
+
+
+
+    function preparargs(γCargs, γVargs, Pxargs, ΔRargs, Δγargs, αCargs, αVargs, εF)
+
+        if length(γCargs) != 1
+            pushfirst!(γCargs, εF)
+            pushfirst!(γVargs, εF)
+        end
+
+        if length(Pxargs) != 1
+            pushfirst!(Pxargs, εF)
+        end
+
+        pushfirst!(ΔRargs, εF)
+        pushfirst!(Δγargs, εF)
+        pushfirst!(αCargs, εF)
+        pushfirst!(αVargs, εF)
     end
 
-    [H_11 H_12  0; H_21 H_22 H_23;  0 H_32 H_33]
-end
+
+    function showparams(EC, EV, γCargs, γVargs,
+                        Pxargs, Δγargs, ΔRargs, αCargs, αVargs)
+        println("gammaC: ", γCargs)
+        println("gammaV: ", γVargs)
+        println("DeltaR: ", ΔRargs)
+        println("alphaC: ", αCargs)
+        println("alphaV: ", αVargs)
+    end
+
+    function hamilBulk(kx, ky, εF; EC, EV, γCargs, γVargs, Pxargs,
+                        Δγargs, ΔRargs, αCargs, αVargs)
+
+        if length(ΔRargs) == 1
+            # show_params(EC, EV, γCargs, γVargs, Pxargs, Δγargs, ΔRargs, αCargs, αVargs)
+            preparargs(γCargs, γVargs, Pxargs, ΔRargs, Δγargs, αCargs, αVargs, εF)
+            # show_params(EC, EV, γCargs, γVargs, Pxargs, Δγargs, ΔRargs, αCargs, αVargs)
+        end
 
 
-function spectrumBulk(k_vec_x, ky, εF, params)
+        H_11 = EC + αC(αCargs...)*(kx + ky) + γC(γCargs...)*(kx^2 + ky^2)
+        H_12 =  1im * (kx - 1im * ky) * Px(Pxargs...)
+        H_21 = -1im * (kx + 1im * ky) * Px(Pxargs...)
 
-    H_inf = [hamilBulk(kx, ky, εF; params...) for kx in k_vec_x];
-    H_spectrum = [Ry * 1000 * eigvals( H_inf[i] ) for i = 1 : length(k_vec_x) ];
+        if length(γVargs) == 1
+            H_22 = EV + ΔR(ΔRargs...) + (γV(γVargs...) + Δγ(Δγargs...)) * (kx^2 + ky^2) + αV(αVargs...) * (kx + ky)
+            H_23 = 0
+            H_32 = 0
+            H_33 = EV - ΔR(ΔRargs...) + (γV(γVargs...) - Δγ(Δγargs...)) * (kx^2 + ky^2) + αV(αVargs...) * (kx + ky)
+        else
+            H_22 = EV + (γV(γVargs...) + Δγ(Δγargs...)) * (kx^2 + ky^2) + αV(αVargs...) * (kx + ky)
+            H_23 =  1im*ΔR(ΔRargs...)
+            H_32 = -1im*ΔR(ΔRargs...)
+            H_33 = EV + (γV(γVargs...) - Δγ(Δγargs...)) * (kx^2 + ky^2) + αV(αVargs...) * (kx + ky)
+        end
 
-    H_1 = map(n -> n[1], H_spectrum);
-    H_2 = map(n -> n[2], H_spectrum);
-    H_3 = map(n -> n[3], H_spectrum);
-
-    # plot(k_vec_x./(2*pi/aSystem), H_1,linestyle="",marker=".",markersize=0.5, color="red")
-    # plot(k_vec_x./(2*pi/aSystem), H_2,linestyle="",marker=".",markersize=0.5, color="blue")
-    # plot(k_vec_x./(2*pi/aSystem), H_3,linestyle="",marker=".",markersize=0.5, color="green")
-
-    plot(k_vec_x./(2*pi/aSystem), H_1,linestyle="-",markersize=0.5, color="red")
-    plot(k_vec_x./(2*pi/aSystem), H_2,linestyle="-",markersize=0.5, color="blue")
-    plot(k_vec_x./(2*pi/aSystem), H_3,linestyle="-",markersize=0.5, color="green")
-    show()
-end
+        [H_11 H_12  0; H_21 H_22 H_23;  0 H_32 H_33]
+    end
 
 
-function print_parameters()
-    println(params_97)
+    function spectrumBulk(k_vec_x, ky, εF, params)
 
-    println(params_103)
+        H_inf = [hamilBulk(kx, ky, εF; params...) for kx in k_vec_x];
+        H_spectrum = [Ry * 1000 * eigvals( H_inf[i] ) for i = 1 : length(k_vec_x) ];
 
-    println(params_110)
-end
+        H_1 = map(n -> n[1], H_spectrum);
+        H_2 = map(n -> n[2], H_spectrum);
+        H_3 = map(n -> n[3], H_spectrum);
+
+        # plot(k_vec_x./(2*pi/aSystem), H_1,linestyle="",marker=".",markersize=0.5, color="red")
+        # plot(k_vec_x./(2*pi/aSystem), H_2,linestyle="",marker=".",markersize=0.5, color="blue")
+        # plot(k_vec_x./(2*pi/aSystem), H_3,linestyle="",marker=".",markersize=0.5, color="green")
+
+        plot(k_vec_x./(2*pi/aSystem), H_1,linestyle="-",markersize=0.5, color="red")
+        plot(k_vec_x./(2*pi/aSystem), H_2,linestyle="-",markersize=0.5, color="blue")
+        plot(k_vec_x./(2*pi/aSystem), H_3,linestyle="-",markersize=0.5, color="green")
+        show()
+    end
+
+
+    function print_parameters()
+        println(params_97)
+
+        println(params_103)
+
+        println(params_110)
+    end
 
 end # end module
 

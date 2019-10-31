@@ -4,9 +4,18 @@ module HamGaSb
 using PyPlot
 using LinearAlgebra
 
+
+## Constants :
 const Ry = 13.6; # constante de Rydberg;
 const a₀ = 0.529167; # raio de Bohr
 const aSystem = 6.21/a₀; # parâmetro de rede em unidades de raio de Bohr
+
+## Modules that are visible to "main"
+export spectrumBulk
+export hamilBulk
+export params_97
+export params_103
+export params_110
 
 function γC(gamma :: Float64)
     ## for 97 Å
@@ -120,21 +129,22 @@ function preparargs(γCargs, γVargs, Pxargs, ΔRargs, Δγargs, αCargs, αVarg
 end
 
 
-function hamil3x3_up(kx, ky, εF; EC, EV, γCargs, γVargs, Pxargs,
+function showparams(EC, EV, γCargs, γVargs,
+                    Pxargs, Δγargs, ΔRargs, αCargs, αVargs)
+    println("gammaC: ", γCargs)
+    println("gammaV: ", γVargs)
+    println("DeltaR: ", ΔRargs)
+    println("alphaC: ", αCargs)
+    println("alphaV: ", αVargs)
+end
+
+function hamilBulk(kx, ky, εF; EC, EV, γCargs, γVargs, Pxargs,
                     Δγargs, ΔRargs, αCargs, αVargs)
 
     if length(ΔRargs) == 1
-        println("gammaC: ", γCargs)
-        println("gammaV: ", γVargs)
-        println("DeltaR: ", ΔRargs)
-        println("alphaC: ", αCargs)
-        println("alphaV: ", αVargs)
+        # show_params(EC, EV, γCargs, γVargs, Pxargs, Δγargs, ΔRargs, αCargs, αVargs)
         preparargs(γCargs, γVargs, Pxargs, ΔRargs, Δγargs, αCargs, αVargs, εF)
-        println("gammaC: ", γCargs)
-        println("gammaV: ", γVargs)
-        println("DeltaR: ", ΔRargs)
-        println("alphaC: ", αCargs)
-        println("alphaV: ", αVargs)
+        # show_params(EC, EV, γCargs, γVargs, Pxargs, Δγargs, ΔRargs, αCargs, αVargs)
     end
 
 
@@ -158,11 +168,9 @@ function hamil3x3_up(kx, ky, εF; EC, EV, γCargs, γVargs, Pxargs,
 end
 
 
-function spectrum_inf_DS(k_vec_x, ky, εF, params)
+function spectrumBulk(k_vec_x, ky, εF, params)
 
-
-
-    H_inf = [hamil3x3_up(kx, ky, εF; params...) for kx in k_vec_x];
+    H_inf = [hamilBulk(kx, ky, εF; params...) for kx in k_vec_x];
     H_spectrum = [Ry * 1000 * eigvals( H_inf[i] ) for i = 1 : length(k_vec_x) ];
 
     H_1 = map(n -> n[1], H_spectrum);
@@ -176,8 +184,7 @@ function spectrum_inf_DS(k_vec_x, ky, εF, params)
     plot(k_vec_x./(2*pi/aSystem), H_1,linestyle="-",markersize=0.5, color="red")
     plot(k_vec_x./(2*pi/aSystem), H_2,linestyle="-",markersize=0.5, color="blue")
     plot(k_vec_x./(2*pi/aSystem), H_3,linestyle="-",markersize=0.5, color="green")
-
-    return 0
+    show()
 end
 
 
@@ -189,7 +196,7 @@ function print_parameters()
     println(params_110)
 end
 
-end
+end # end module
 
 
 
